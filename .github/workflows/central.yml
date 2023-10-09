@@ -3,10 +3,10 @@ name: Intiface Central Build
 # Only build on tag pushes
 on: 
   push:
-#    branches:
-#      - main
-#      - dev
-#      - ci
+    branches:
+      - main
+      - dev
+      - ci
     tags:
       - 'v*'      
 
