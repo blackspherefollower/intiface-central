@@ -3,17 +3,17 @@ name: Intiface Central Build
 # Only build on tag pushes
 on: 
   push:
-#    branches:
-#      - main
-#      - dev
-#      - ci
+    branches:
+      - main
+      - dev
+      - ci
     tags:
       - 'v*'      
 
 concurrency:
   group: ${{ github.head_ref ||  github.ref }}
-  cancel-in-progress: true      
-            
+  cancel-in-progress: true
+
 jobs:
   windows:
     runs-on: windows-latest
@@ -35,12 +35,40 @@ jobs:
         name: flutter config
       - run: flutter build windows --release --dart-define="SENTRY_DSN=${{ secrets.SENTRY_DSN }}"
         name: flutter build
+      - run: |
+          if('${{ secrets.NPLABS_WINDOWS_202205_CERT }}' -eq '' ) {
+            Write-Output "::warning::no signing information"
+            "SKIP_SIGN=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+        name: 'Check for signing information'
+      - uses: dlemstra/code-sign-action@v1
+        name: Sign Intiface Central Executable
+        if: env.SKIP_SIGN == ''
+        with:
+          certificate: '${{ secrets.NPLABS_WINDOWS_202205_CERT }}'
+          password: '${{ secrets.NPLABS_WINDOWS_202205_KEY }}'
+          folder: '.\build\windows\x64\runner\Release'
+          recursive: false
+          files: |
+            intiface_central.exe
+          description: 'Intiface Central'
       - name: Build Innosetup Installer
         shell: pwsh
         env:
           BUILD_VERSION: ${{ github.ref_name }}
         run: |
           iscc .\intiface-central-installer.iss
+      - uses: dlemstra/code-sign-action@v1
+        name: Sign Installer
+        if: env.SKIP_SIGN == ''
+        with:
+          certificate: '${{ secrets.NPLABS_WINDOWS_202205_CERT }}'
+          password: '${{ secrets.NPLABS_WINDOWS_202205_KEY }}'
+          folder: '.\installer\'
+          recursive: false
+          files: |
+            intiface-central-installer.exe
+          description: 'Intiface Central Installer'
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -150,17 +178,17 @@ jobs:
 #      - name: Install cargo-make
 #        run: cargo install cargo-make
 #      - name: Build rust android library
-#        env: 
+#        env:
 #          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 #          RANLIB: ${{ format('{0}{1}', steps.setup-ndk.outputs.ndk-path, '/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ranlib') }}
-#        run: cargo make build-android 
+#        run: cargo make build-android
 #        working-directory: intiface-engine-flutter-bridge
 #      - uses: subosito/flutter-action@v2
 #        with:
 #          channel: 'stable'
 #          cache: true
 #          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-#      - run: flutter config 
+#      - run: flutter config
 #        name: flutter config
 #      - run: flutter build apk --release --dart-define="SENTRY_DSN=${{ secrets.SENTRY_DSN }}"
 #        name: flutter build apk
