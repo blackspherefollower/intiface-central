@@ -36,8 +36,8 @@ jobs:
         name: flutter build
       - run: |
           if('${{ secrets.NPLABS_WINDOWS_202205_CERT }}' -eq '' ) {
-            echo ::warning no signing informatio
-            echo "SKIP_SIGN=1" >> "$GITHUB_ENV"
+            Write-Output "::warning::no signing information"
+            "SKIP_SIGN=1" | Out-File -FilePath $env:GITHUB_ENV -Append
           }
         name: 'Check for signing information'
       - uses: dlemstra/code-sign-action@v1
