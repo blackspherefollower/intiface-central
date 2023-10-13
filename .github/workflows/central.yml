@@ -39,8 +39,7 @@ jobs:
             echo ::warning no signing informatio
             echo "SKIP_SIGN=1" >> "$GITHUB_ENV"
           }
-        if: secrets.NPLABS_WINDOWS_202205_CERT == ''
-        name: 'Sign Intiface Central Executable'
+        name: 'Check for signing information'
       - uses: dlemstra/code-sign-action@v1
 <<<<<<< HEAD
         name: Sign Intiface Central Executable
