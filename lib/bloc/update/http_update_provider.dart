@@ -58,9 +58,9 @@ class DeviceConfigUpdateProvider extends HttpUpdateProvider {
   @override
   Future<UpdateState?> update() async {
     var etag = await interalUpdate();
-    if (etag != null) {
-      return DeviceConfigUpdateRetrieved(etag);
-    }
+    // if (etag != null) {
+    //   return DeviceConfigUpdateRetrieved(etag);
+     // }
     return null;
   }
 }
