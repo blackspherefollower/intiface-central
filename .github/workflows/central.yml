@@ -12,8 +12,8 @@ on:
 
 concurrency:
   group: ${{ github.head_ref ||  github.ref }}
-  cancel-in-progress: true      
-            
+  cancel-in-progress: true
+
 jobs:
   windows:
     runs-on: windows-latest
@@ -41,27 +41,15 @@ jobs:
           }
         name: 'Check for signing information'
       - uses: dlemstra/code-sign-action@v1
-<<<<<<< HEAD
-        name: Sign Intiface Central Executable
-        if: secrets.NPLABS_WINDOWS_202205_CERT != ''
-=======
         if: env.SKIP_SIGN == ''
->>>>>>> e11410d (Update central.yml)
         with:
           certificate: '${{ secrets.NPLABS_WINDOWS_202205_CERT }}'
           password: '${{ secrets.NPLABS_WINDOWS_202205_KEY }}'
-          folder: '.\build\windows\x64\runner\Release'
+          folder: '.\build\windows\runner\Release'
           recursive: false
           files: |
             intiface_central.exe
-<<<<<<< HEAD
-          description: 'Intiface Central'
-      - run: echo ::warning no signing informatio
-        if: secrets.NPLABS_WINDOWS_202205_CERT == ''
-        name: 'Sign Intiface Central Executable'
-=======
           description: 'Sign Intiface Central Executable'
->>>>>>> e11410d (Update central.yml)
       - name: Build Innosetup Installer
         shell: pwsh
         env:
@@ -69,12 +57,7 @@ jobs:
         run: |
           iscc .\intiface-central-installer.iss
       - uses: dlemstra/code-sign-action@v1
-<<<<<<< HEAD
-        name: Sign Installer
-        if: secrets.NPLABS_WINDOWS_202205_CERT != ''
-=======
         if: env.SKIP_SIGN == ''
->>>>>>> e11410d (Update central.yml)
         with:
           certificate: '${{ secrets.NPLABS_WINDOWS_202205_CERT }}'
           password: '${{ secrets.NPLABS_WINDOWS_202205_KEY }}'
@@ -82,15 +65,8 @@ jobs:
           recursive: false
           files: |
             intiface-central-installer.exe
-<<<<<<< HEAD
-          description: 'Intiface Central Installer'
-      - run: echo ::warning no signing informatio
-        if: secrets.NPLABS_WINDOWS_202205_CERT == ''
-        name: 'Sign Intiface Central Installer'
-=======
           description: 'Sign Intiface Central Installer'
-        name: 'Sign Intiface Central Installer'      
->>>>>>> e11410d (Update central.yml)
+        name: 'Sign Intiface Central Installer'
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
