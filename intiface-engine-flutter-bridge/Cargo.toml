@@ -1,6 +1,6 @@
 [package]
 name = "intiface_engine_flutter_bridge"
-version = "1.1.2"
+version = "1.0.12"
 authors = ["Nonpolynomial Labs, LLC <kyle@nonpolynomial.com>"]
 description = "Rust-Flutter bridge for IntifaceEngine" 
 license = "BSD-3-Clause"
@@ -10,11 +10,13 @@ edition = "2021"
 exclude = [".vscode/**"]
 
 [dependencies]
-intiface-engine = "3.0.2"
+# intiface-engine = "3.0.2"
 # intiface-engine = { path = "../../intiface-engine" }
+intiface-engine = { git = 'https://github.com/blackspherefollower/intiface-engine', branch = 'loob-support' }
 # THIS MUST ALWAYS MATCH THE VERSION USED BY INTIFACE ENGINE
 # buttplug = { path = "../../buttplug/buttplug" }
-buttplug = "9.0.1"
+# buttplug = "9.0.1"
+buttplug = { git = 'https://github.com/blackspherefollower/buttplug-rs', branch = 'loob-support' }
 flutter_rust_bridge = "1.82.6"
 log = "0.4.22"
 lazy_static = "1.5.0"
@@ -24,7 +26,9 @@ anyhow = "1.0.86"
 # THIS VERSION ABSOLUTELY, POSITIVELY MUST MATCH WHATEVER BUTTPLUG LINKS, OTHERWISE THERE WILL BE
 # STATIC MISALIGNMENT AND YOU DO NOT WANT TO SPEND ANOTHER 3 DAYS DEBUGGING THAT.
 # btleplug = { path = "../../btleplug" }
-btleplug = "0.11.5"
+# btleplug = "0.11.5"
+btleplug = { git = 'https://github.com/blackspherefollower/btleplug', branch = 'dev' }
+bitflags = "2.6.0"
 thiserror = "1.0.63"
 getset = "0.1.2"
 serde = "1.0.209"
