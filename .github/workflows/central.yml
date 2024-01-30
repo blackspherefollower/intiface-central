@@ -72,6 +72,7 @@ jobs:
         with:
           name: windows-installer
           path: |
+            build/windows/runner/Release/intiface_central.pdb
             installer/intiface-central-installer.exe
   linux:
     strategy:
