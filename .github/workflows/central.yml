@@ -148,7 +148,6 @@ jobs:
         id: setup-ndk
         with:
           ndk-version: r25b
-          local-cache: true
       - name: Restore keystore
         uses: timheuer/base64-to-file@v1.2
         with:
