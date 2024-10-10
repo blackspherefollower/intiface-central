@@ -109,32 +109,46 @@ jobs:
         with:
           name: linux-${{ matrix.os }}-zip
           path: ./intiface-central-linux-${{ matrix.os }}-x64.zip
-#  macos:
-#    runs-on: macos-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: rust toolchain
-#        uses: actions-rs/toolchain@v1
-#        with:
-#          profile: minimal
-#          toolchain: stable
-#          override: true
-#      - uses: subosito/flutter-action@v2
-#        with:
-#          channel: 'stable'
-#          cache: true
-#          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
-#      - run: flutter config --enable-macos-desktop
-#        name: flutter config
-#      - run: flutter build macos --release --dart-define="SENTRY_DSN=${{ secrets.SENTRY_DSN }}"
-#        name: flutter build
-#      - name: Zip Release
-#        run: zip -r intiface-central-macos-universal.zip build/macos/Build/Products/Release/intiface_central.app
-#      - name: Archive production artifacts
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: macos-zip
-#          path: ./intiface-central-macos-universal.zip
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+      - run: flutter config --enable-macos-desktop
+        name: flutter config
+      - run: flutter build macos --release --dart-define="SENTRY_DSN=${{ secrets.SENTRY_DSN }}"
+        name: flutter build
+      - run: |
+          if('${{ secrets.APPLE_USER_ID }}' -eq '' ) || ('${{ secrets.APPLE_PASSWORD }}' -eq '' ) || ('${{ secrets.APPLE_TEAM_ID }}' -eq '' ) {
+            Write-Output "::warning::no notorization information"
+            "SKIP_NOTORIZE=1" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+        name: 'Check for notorization information'
+      - uses: GuillaumeFalourd/notary-tools@v1
+        name: Notorize app
+        if: env.SKIP_NOTORIZE == ''
+        with:
+          product_path: build/macos/Build/Products/Release/intiface_central.app
+          apple_id: ${{ secrets.APPLE_USER_ID }}
+          password: ${{ secrets.APPLE_PASSWORD }}
+          team_id: ${{ secrets.APPLE_TEAM_ID }}
+      - name: Zip Release
+        run: zip -r intiface-central-macos-universal.zip build/macos/Build/Products/Release/intiface_central.app
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos-zip
+          path: ./intiface-central-macos-universal.zip
   android:
     runs-on: ubuntu-latest
     steps:
